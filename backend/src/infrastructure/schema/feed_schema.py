@@ -7,6 +7,6 @@ class Feed(Base):
     __tablename__ = "feeds"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    title = Column(String, nullable=False)
+    title = Column(String(255), nullable=False)
     content = Column(Text, nullable=False)
-    author = Column(String, nullable=False)
+    author = Column(String(100), nullable=False)
