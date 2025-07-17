@@ -59,9 +59,21 @@ class ResponseFormatter:
                 "places": places_list,
             }
 
+        # 비어있는 경우를 위한 기본값
+        city = ""
+        search_radius = 2000
+
+        # 첫 번째 place_search에서 공통 정보 추출
+        if places_by_type:
+            first_place_search = next(iter(places_by_type.values()))
+            city = first_place_search.city
+            search_radius = first_place_search.search_radius
+
         return {
-            "city": place_search.city if places_by_type else "",
-            "search_radius": place_search.search_radius if places_by_type else 2000,
+            "city": city,
+            "search_radius": search_radius,
+            "places_by_type": formatted_places,
+        }
             "places_by_type": formatted_places,
         }
 
