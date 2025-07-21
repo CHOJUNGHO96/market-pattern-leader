@@ -10,7 +10,7 @@ class Settings(BaseSettings):
     # 애플리케이션 기본 설정
     PROJECT_NAME: str = "PatternLeader"
     VERSION: str = "1.0.0"
-    DEBUG: bool = False
+    DEBUG: bool = True  # 디버그 모드 활성화
     LOG_LEVEL: str = "INFO"
     
     # API 설정

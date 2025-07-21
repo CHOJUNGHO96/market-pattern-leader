@@ -19,15 +19,15 @@ analysis_engine = AnalysisEngine()
 logger = get_logger(__name__)
 
 
-@router.get("/psychology/{symbol}", response_model=AnalysisResponse)
-async def analyze_market_psychology(
+@router.get("/psychology/{symbol:path}", response_model=AnalysisResponse)
+async def analyze_market_psychology_path(
     symbol: str = Path(..., description="종목 코드 (예: AAPL, BTC/USDT)"),
     market_type: str = Query(..., pattern="^(stock|crypto)$", description="시장 타입"),
     period: str = Query("3mo", pattern="^(1mo|3mo|6mo|1y)$", description="분석 기간"),
     exchange: Optional[str] = Query(None, description="거래소 (암호화폐만 해당)")
 ):
     """
-    시장 심리 분석 API
+    시장 심리 분석 API (경로 파라미터 방식)
     
     주어진 종목의 시장 심리를 KDE 분포 분석을 통해 계산하고,
     매수/관망/매도 비율, 감정 지수, 리스크 레벨 등을 제공합니다.
@@ -44,6 +44,44 @@ async def analyze_market_psychology(
     Raises:
         HTTPException: 분석 실패 시
     """
+    return await _analyze_market_psychology_internal(symbol, market_type, period, exchange)
+
+
+@router.get("/psychology", response_model=AnalysisResponse)
+async def analyze_market_psychology_query(
+    symbol: str = Query(..., description="종목 코드 (예: AAPL, BTC/USDT)"),
+    market_type: str = Query(..., pattern="^(stock|crypto)$", description="시장 타입"),
+    period: str = Query("3mo", pattern="^(1mo|3mo|6mo|1y)$", description="분석 기간"),
+    exchange: Optional[str] = Query(None, description="거래소 (암호화폐만 해당)")
+):
+    """
+    시장 심리 분석 API (쿼리 파라미터 방식)
+    
+    주어진 종목의 시장 심리를 KDE 분포 분석을 통해 계산하고,
+    매수/관망/매도 비율, 감정 지수, 리스크 레벨 등을 제공합니다.
+    
+    Args:
+        symbol: 종목 코드 (예: AAPL, BTC/USDT)
+        market_type: 시장 타입 (stock, crypto)
+        period: 분석 기간 (1mo, 3mo, 6mo, 1y)
+        exchange: 거래소 (암호화폐만 해당)
+    
+    Returns:
+        심리 분석 결과 및 시각화 데이터
+        
+    Raises:
+        HTTPException: 분석 실패 시
+    """
+    return await _analyze_market_psychology_internal(symbol, market_type, period, exchange)
+
+
+async def _analyze_market_psychology_internal(
+    symbol: str,
+    market_type: str,
+    period: str,
+    exchange: Optional[str] = None
+) -> AnalysisResponse:
+    """내부 공통 분석 함수"""
     try:
         logger.info(f"심리 분석 요청: {symbol} ({market_type}, {period})")
         
@@ -69,7 +107,7 @@ async def analyze_market_psychology(
         raise HTTPException(status_code=500, detail="분석 중 오류가 발생했습니다")
 
 
-@router.get("/quick/{symbol}", response_model=QuickAnalysisResponse)
+@router.get("/quick/{symbol:path}", response_model=QuickAnalysisResponse)
 async def quick_analyze(
     symbol: str = Path(..., description="종목 코드"),
     market_type: str = Query("crypto", pattern="^(stock|crypto)$", description="시장 타입"),
@@ -111,7 +149,7 @@ async def quick_analyze(
         raise HTTPException(status_code=500, detail="분석 중 오류가 발생했습니다")
 
 
-@router.get("/distribution/{symbol}", response_model=VisualizationData)
+@router.get("/distribution/{symbol:path}", response_model=VisualizationData)
 async def get_distribution_data(
     symbol: str = Path(..., description="종목 코드"),
     market_type: str = Query(..., pattern="^(stock|crypto)$", description="시장 타입"),
@@ -153,7 +191,7 @@ async def get_distribution_data(
         raise HTTPException(status_code=500, detail="분포 데이터 조회 중 오류가 발생했습니다")
 
 
-@router.get("/validate/{symbol}", response_model=SymbolValidationResponse)
+@router.get("/validate/{symbol:path}", response_model=SymbolValidationResponse)
 async def validate_symbol(
     symbol: str = Path(..., description="검증할 종목 코드"),
     market_type: str = Query(..., pattern="^(stock|crypto)$", description="시장 타입")
