@@ -1,0 +1,11 @@
+# ============================================
+# 초간단 Frontend Dependencies (Python 3.12 확실히 호환)
+# ============================================
+
+streamlit
+plotly
+pandas
+numpy>=1.26.0
+requests
+pydantic
+typing-extensions>=4.12.2 

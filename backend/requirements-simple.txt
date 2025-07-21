@@ -1,0 +1,12 @@
+# ============================================
+# 초간단 Backend Dependencies (Python 3.12 확실히 호환)
+# ============================================
+
+fastapi
+uvicorn[standard]
+pydantic
+numpy>=1.26.0
+pandas
+requests
+yfinance
+typing-extensions>=4.12.2 
